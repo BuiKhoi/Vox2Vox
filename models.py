@@ -13,8 +13,8 @@ def Generator():
     '''
     Generator model
     '''
-    def encoder_step(layer, Nf, norm=True):
-        x = Conv3D(Nf, kernel_size=4, strides=2, kernel_initializer='he_normal', padding='same')(layer)
+    def encoder_step(layer, Nf, ks, norm=True):
+        x = Conv3D(Nf, kernel_size=ks, strides=2, kernel_initializer='he_normal', padding='same')(layer)
         if norm:
             x = InstanceNormalization()(x)
         x = LeakyReLU()(x)
@@ -97,12 +97,12 @@ def Discriminator():
         else:
             x = encoder_step(x, Nfilter_start*np.power(2,d))
             
-    x = ZeroPadding3D()
-    x = Conv3D(Nf*(2**depth), ks, strides=1, padding='valid', kernel_initializer='he_normal')(x) 
+    x = ZeroPadding3D()(x)
+    x = Conv3D(Nfilter_start*(2**depth), ks, strides=1, padding='valid', kernel_initializer='he_normal')(x) 
     x = InstanceNormalization()(x)
     x = x = LeakyReLU()(x)
       
-    x = ZeroPadding3D()
+    x = ZeroPadding3D()(x)
     last = Conv3D(1, ks, strides=1, padding='valid', kernel_initializer='he_normal', name='output_discriminator')(x) 
 
     return Model(inputs=[targets, inputs], outputs=last, name='Discriminator')

@@ -106,27 +106,30 @@ def random_decisions(N):
         
     return decisions
 
-def combine_aug(X, y, do):
+def combine_aug(X, y):
     """
     Combine randomly the different augmentation techniques written above
     """
     Xnew, ynew = X, y
-    
+    rand = np.random.random() * 4
     # make sure to use at least the 25% of original images
     if np.random.random_sample()>0.75:
         return Xnew, ynew
     
     else:   
-        if do[0] == 1:
+        if rand < 1:
             Xnew, ynew = flip3D(Xnew, ynew)
 
-        if do[1] == 1:
+        elif rand < 2:
             Xnew, ynew = brightness(Xnew, ynew)   
 
-        if do[2] == 1:
-            Xnew, ynew = rotation3D(Xnew, ynew)
+        elif rand < 3:
+            try:
+                Xnew, ynew = rotation3D(Xnew, ynew)
+            except RuntimeError:
+                Xnew, ynew = X, y
 
-        if do[3] == 1:
+        else:
             Xnew, ynew = elastic(Xnew, ynew)
         
         return Xnew, ynew

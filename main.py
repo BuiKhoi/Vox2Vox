@@ -17,23 +17,23 @@ from losses import *
 from models import *
 from train_v2v import *
 
-%load_ext autoreload
-%autoreload 2
+# %load_ext autoreload
+# %autoreload 2
 
 Nclasses = 4
 classes = np.arange(Nclasses)
 
 # images lists
-t1_list = sorted(glob.glob('../BRATS_2020/Training/*/*t1.nii'))
-t2_list = sorted(glob.glob('../BRATS_2020/Training/*/*t2.nii'))
-t1ce_list = sorted(glob.glob('../BRATS_2020/Training/*/*t1ce.nii'))
-flair_list = sorted(glob.glob('../BRATS_2020/Training/*/*flair.nii'))
-seg_list = sorted(glob.glob('../BRATS_2020/Training/*/*seg.nii'))
+t1_list = sorted(glob.glob('../BraTS2020/*/*t1.nii.gz'))
+t2_list = sorted(glob.glob('../BraTS2020/*/*t2.nii.gz'))
+t1ce_list = sorted(glob.glob('../BraTS2020/*/*t1ce.nii.gz'))
+flair_list = sorted(glob.glob('../BraTS2020/*/*flair.nii.gz'))
+seg_list = sorted(glob.glob('../BraTS2020/*/*seg.nii.gz'))
 
 # create the training and validation sets
 Nim = len(t1_list)
 idx = np.arange(Nim)
-
+# print(idx)
 idxTrain, idxValid = train_test_split(idx, test_size=0.25)
 sets = {'train': [], 'valid': []}
 
