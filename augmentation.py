@@ -60,9 +60,13 @@ def rotation3D(X, y):
     R = np.dot(np.dot(Rx, Ry), Rz)
     
     X_rot = np.empty_like(X)
-    for channel in range(X.shape[-1]):
-        X_rot[:,:,:,channel] = affine_transform(X[:,:,:,channel], R, offset=0, order=3, mode='constant')
-    y_rot = affine_transform(y, R, offset=0, order=0, mode='constant')
+    for batch_item in range(X.shape[0]):
+        for channel in range(X.shape[-1]):
+            X_rot[batch_item,:,:,:,channel] = affine_transform(X[batch_item,:,:,:,channel], R, offset=0, order=3, mode='constant')
+
+    y_rot = np.empty_like(y)
+    for batch_item in range(y.shape[0]):
+        y_rot[batch_item] = affine_transform(y[batch_item], R, offset=0, order=0, mode='constant')
     
     return X_rot, y_rot
 
@@ -124,10 +128,7 @@ def combine_aug(X, y):
             Xnew, ynew = brightness(Xnew, ynew)   
 
         elif rand < 3:
-            try:
-                Xnew, ynew = rotation3D(Xnew, ynew)
-            except RuntimeError:
-                Xnew, ynew = X, y
+            Xnew, ynew = rotation3D(Xnew, ynew)
 
         else:
             Xnew, ynew = elastic(Xnew, ynew)
