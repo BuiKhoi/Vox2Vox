@@ -1,0 +1,8 @@
+elasticdeform==0.4.6
+matplotlib
+numpy
+scikit-learn
+sklearn
+tensorflow-gpu==2.2.0
+tensorflow-addons==0.11.2
+opencv-python

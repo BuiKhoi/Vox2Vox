@@ -1,49 +1,16 @@
-import os
-import numpy as np
-import tensorflow as tf
-import nibabel as nib
-import glob
-import time
-from tensorflow.keras.utils import to_categorical
-from sys import stdout
-import matplotlib.pyplot as plt
-import matplotlib.image as mpim
-from scipy.ndimage.interpolation import affine_transform
-from sklearn.model_selection import train_test_split
+from train_v2v import TrainingOperator
+from test_v2v import TestingOperator
 
-from utils import *
-from augmentation import *
-from losses import *
-from models import *
-from train_v2v import *
+from config.base_config import BaseConfig
+from config.training_config import TrainingConfig
+from config.testing_config import TestingConfig
 
-# %load_ext autoreload
-# %autoreload 2
-
-Nclasses = 4
-classes = np.arange(Nclasses)
-
-# images lists
-t1_list = sorted(glob.glob('../BraTS2020/*/*t1.nii.gz'))
-t2_list = sorted(glob.glob('../BraTS2020/*/*t2.nii.gz'))
-t1ce_list = sorted(glob.glob('../BraTS2020/*/*t1ce.nii.gz'))
-flair_list = sorted(glob.glob('../BraTS2020/*/*flair.nii.gz'))
-seg_list = sorted(glob.glob('../BraTS2020/*/*seg.nii.gz'))
-
-# create the training and validation sets
-Nim = len(t1_list)
-idx = np.arange(Nim)
-# print(idx)
-idxTrain, idxValid = train_test_split(idx, test_size=0.25)
-sets = {'train': [], 'valid': []}
-
-for i in idxTrain:
-    sets['train'].append([t1_list[i], t2_list[i], t1ce_list[i], flair_list[i], seg_list[i]])
-for i in idxValid:
-    sets['valid'].append([t1_list[i], t2_list[i], t1ce_list[i], flair_list[i], seg_list[i]])
-    
-train_gen = DataGenerator(sets['train'], augmentation=True)
-valid_gen = DataGenerator(sets['valid'], augmentation=True)
-    
-# train the vox2vox model
-h = fit(train_gen, valid_gen, 200)
+config = BaseConfig()
+if config.training:
+    config = TrainingConfig()
+    operator = TrainingOperator(config)
+    operator.fit()
+else:
+    config = TestingConfig()
+    operator = TestingOperator(config)
+    operator.test()

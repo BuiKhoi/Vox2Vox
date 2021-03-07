@@ -6,6 +6,19 @@ from tensorflow.keras.utils import to_categorical
 import matplotlib.pyplot as plt
 from augmentation import *
 
+def rescale_img(image, new_min=0, new_max=1):
+    image = image.copy()
+    minn = image.min()
+    maxx = image.max()
+    
+    image -= minn
+    image /= (maxx - minn)
+    
+    image *= (new_max - new_min)
+    image += new_min
+    
+    return image
+
 def load_img(img_files):
     ''' Load one image and its target form file
     '''
@@ -28,23 +41,6 @@ def load_img(img_files):
     del(X, brain, brain_norm)
     
     return X_norm, y
-    
-def visualize(X):
-    """
-    Visualize the image middle slices for each axis
-    """
-    a,b,c = X.shape
-    
-    plt.figure(figsize=(15,15))
-    plt.subplot(131)
-    plt.imshow(np.rot90(X[a//2, :, :]), cmap='gray')
-    plt.axis('off')
-    plt.subplot(132)
-    plt.imshow(np.rot90(X[:, b//2, :]), cmap='gray')
-    plt.axis('off')
-    plt.subplot(133)
-    plt.imshow(X[:, :, c//2], cmap='gray')
-    plt.axis('off')
     
 class DataGenerator(tf.keras.utils.Sequence):
     'Generates data for Keras'
@@ -99,11 +95,8 @@ class DataGenerator(tf.keras.utils.Sequence):
         for i, IDs in enumerate(list_IDs_temp):
             # Store sample
             X[i], y[i] = load_img(IDs)
-            
-        if self.augmentation == True:
-            return X.astype('float32'), y
-        else:
-            return X.astype('float32'), to_categorical(y, self.n_classes)
+
+        return X.astype('float32'), y
 
     def __data_augmentation(self, X, y):
         'Apply augmentation'
