@@ -43,12 +43,13 @@ class TestingOperator:
         save_path = self.config.save_test_result_folder
         if not os.path.exists(save_path):
             os.mkdir(save_path)
-        save_path += datetime.today().strftime('%Y-%m-%d-%H:%M:%S') + '.avi'
-        print(save_path)
+        # save_path += str(datetime.today().strftime('%Y-%m-%d-%H:%M:%S')) + '.avi'
+        save_path += 'output.avi'
+        fourcc = cv2.VideoWriter_fourcc(*'XVID')
         out_video = cv2.VideoWriter(
             save_path, 
-            cv2.VideoWriter_fourcc(*'mpeg'), 
-            20, (384,128)
+            fourcc, 
+            5, (128*3, 128)
         )
         
         data_range = self.test_gen.__len__()
@@ -58,14 +59,15 @@ class TestingOperator:
         gen_output = self.G(Xt, training=False).numpy()
         x = Xt[0,:,:,:,2]
         for idx in range(128):
-            canvas = np.zeros((128, 128*3))
-            canvas[0:128, 0:128] = (x[:, :, idx] - np.min(x[:, :, idx]))/(np.max(x[:, :, idx])-np.min(x[:, :, idx])+1e-6)
-            canvas[0:128, 128:2*128] = uncategorical_label(yt[0,:,:,idx])
-            canvas[0:128, 2*128:3*128] = uncategorical_label(gen_output[0,:,:,idx])
+            canvas = np.zeros((128, 128*3, 3))
+            for i in range(3):
+                canvas[0:128, 0:128, i] = (x[:, :, idx] - np.min(x[:, :, idx]))/(np.max(x[:, :, idx])-np.min(x[:, :, idx])+1e-6)
+                canvas[0:128, 128:2*128, i] = uncategorical_label(yt[0,:,:,idx])
+                canvas[0:128, 2*128:3*128, i] = uncategorical_label(gen_output[0,:,:,idx])
             cv2.imshow('Segmentations', canvas)
-            out_video.write(canvas)
+            out_video.write((canvas*255).astype(np.uint8))
             if cv2.waitKey(1):
                 pass
-            time.sleep(self.config.show_image_delay / 1000)
+            # time.sleep(self.config.show_image_delay / 1000)
         cv2.destroyAllWindows()
         out_video.release()
