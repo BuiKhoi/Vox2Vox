@@ -53,7 +53,9 @@ python main.py
 * You can specify which model to be tested with `test_weight` in [testing config](./config/testing_config.py), otherwise, we will load `generator_latest` to test
 
 # Experimental result
-* Vox2Vox has been running and producing the following result:
+* Vox2Vox has been running and producing the following result(T2 image, Ground truth and predicted):
 ![result 1](./results/1.gif)
+
 ![result 2](./results/2.gif)
+
 ![result 3](./results/3.gif)

@@ -7,4 +7,5 @@ class TrainingConfig(BaseConfig):
     class_weights = './class_weights.npy'
     epochs = 100
     batch_size = 1
-    continue_training = True
+    continue_training = False
+    training_log_file = './checkpoints/training_log.txt'

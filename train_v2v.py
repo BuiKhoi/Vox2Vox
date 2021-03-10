@@ -152,6 +152,9 @@ class TrainingOperator:
             else:
                 print("Validation loss did not decrese from {:.4f}.".format(prev_loss))
             print(' ')
+
+            with open(self.config.training_log_file, 'a') as training_log_file:
+                training_log_file.write('{} {} {}\n'.format(e, epoch_v2v_loss.result(), epoch_v2v_loss_val.result()))
             
             self.G.save_weights(self.checkpoint_path + '/generator_latest.h5') 
             self.D.save_weights(self.checkpoint_path + '/discriminator_latest.h5')
